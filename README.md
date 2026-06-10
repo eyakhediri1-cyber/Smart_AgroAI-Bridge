@@ -1,5 +1,5 @@
 # Smart_AgroAI-Bridge
-Smart AgroAI Bridge is an AI-powered agricultural assistant designed for rural African farmers.
+Smart AgroAI Bridge is an AI-powered agricultural assistant designed for rural Tunisian farmers.
 
 The system uses computer vision and conversational AI to detect crop diseases, provide agricultural recommendations, and interact in Tunisian dialect.
 
