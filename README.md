@@ -25,3 +25,5 @@ Improve agricultural productivity and reduce crop losses through accessible AI t
 - Satellite integration
 - Smart irrigation prediction
 - Multi-crop disease detection
+
+*Built for the Hack The Harvest Hackathon 2026
