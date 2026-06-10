@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <meta name="theme-color" content="#1a2e0e" />
+  <title>مساعد الزيتون</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0d1a07;
+      --surface: #14240c;
+      --surface2: #1c3212;
+      --border: #2d4e1e;
+      --olive: #6b8f3a;
+      --olive-light: #8eb84a;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --text: #e8f0d8;
+      --text-dim: #8a9e70;
+      --danger: #c0392b;
+      --safe: #27ae60;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: 'Amiri', serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* Background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(107, 143, 58, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, rgba(201, 168, 76, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      padding: 0 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 32px 0 8px;
+    }
+
+    .logo {
+      font-size: 56px;
+      line-height: 1;
+      filter: drop-shadow(0 0 20px rgba(107, 143, 58, 0.6));
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 20px rgba(107, 143, 58, 0.6));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 40px rgba(142, 184, 74, 0.9));
+      }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      font-family: 'IBM Plex Mono', monospace;
+      margin-top: 4px;
+      direction: ltr;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Image upload ── */
+    .image-drop {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-drop:hover,
+    .image-drop.drag-over {
+      border-color: var(--olive-light);
+      background: rgba(107, 143, 58, 0.08);
+    }
+
+    .image-drop input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .image-drop img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .drop-icon {
+      font-size: 2.5rem;
+    }
+
+    .drop-text {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* Disease badge */
+    .disease-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+
+    .disease-badge.healthy {
+      background: rgba(39, 174, 96, 0.2);
+      color: #5dde8a;
+      border: 1px solid #27ae60;
+    }
+
+    .disease-badge.sick {
+      background: rgba(192, 57, 43, 0.2);
+      color: #e87060;
+      border: 1px solid #c0392b;
+    }
+
+    /* ── Voice recorder ── */
+    .mic-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--olive);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .mic-btn:hover {
+      border-color: var(--olive-light);
+      transform: scale(1.05);
+    }
+
+    .mic-btn.active {
+      background: rgba(192, 57, 43, 0.3);
+      border-color: #e74c3c;
+      animation: pulse-ring 1.2s ease-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.6);
+      }
+
+      70% {
+        box-shadow: 0 0 0 20px rgba(231, 76, 60, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+      }
+    }
+
+    .mic-label {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    /* Text input fallback */
+    .text-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .text-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'Amiri', serif;
+      font-size: 1rem;
+      outline: none;
+      text-align: right;
+    }
+
+    .text-input:focus {
+      border-color: var(--olive);
+    }
+
+    .send-btn {
+      background: var(--olive);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .send-btn:hover {
+      background: var(--olive-light);
+    }
+
+    /* ── Status / loading ── */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 42px;
+      direction: ltr;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .dot.green {
+      background: var(--safe);
+      box-shadow: 0 0 6px var(--safe);
+    }
+
+    .dot.red {
+      background: var(--danger);
+      box-shadow: 0 0 6px var(--danger);
+    }
+
+    .dot.yellow {
+      background: var(--gold);
+      box-shadow: 0 0 6px var(--gold);
+    }
+
+    .dot.spin {
+      animation: spin-dot 0.8s linear infinite;
+    }
+
+    @keyframes spin-dot {
+      to {
+        transform: rotate(360deg);
+        border-radius: 2px;
+      }
+    }
+
+    /* ── Answer card ── */
+    .answer-card {
+      display: none;
+      animation: slide-up 0.4s ease;
+    }
+
+    .answer-card.visible {
+      display: block;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .in-corpus-badge {
+      font-size: 0.75rem;
+      font-family: 'IBM Plex Mono', monospace;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    .in-corpus-badge.yes {
+      background: rgba(39, 174, 96, 0.2);
+      color: #5dde8a;
+      border: 1px solid #27ae60;
+    }
+
+    .in-corpus-badge.no {
+      background: rgba(192, 57, 43, 0.2);
+      color: #e87060;
+      border: 1px solid #c0392b;
+    }
+
+    .answer-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    .refusal-text {
+      color: #e87060;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    .sources-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .source-tag {
+      font-size: 0.75rem;
+      font-family: 'IBM Plex Mono', monospace;
+      background: rgba(107, 143, 58, 0.15);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      color: var(--olive-light);
+      direction: ltr;
+    }
+
+    /* ── Audio player ── */
+    .audio-player {
+      display: none;
+      margin-top: 14px;
+      width: 100%;
+    }
+
+    .audio-player.visible {
+      display: block;
+    }
+
+    audio {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    /* Play button */
+    .play-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--olive), var(--gold));
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      font-family: 'Amiri', serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s;
+      margin-top: 12px;
+    }
+
+    .play-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* ── Transcription ── */
+    .transcription {
+      font-size: 0.9rem;
+      color: var(--gold);
+      font-style: italic;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .transcription.visible {
+      display: block;
+    }
+
+    /* ── Score meter ── */
+    .score-meter {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.8s ease;
+      background: linear-gradient(to right, var(--danger), var(--gold), var(--safe));
+    }
+
+    .score-label {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: 'IBM Plex Mono', monospace;
+      margin-top: 4px;
+      direction: ltr;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      font-family: 'IBM Plex Mono', monospace;
+      direction: ltr;
+      padding-bottom: 8px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 360px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .mic-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Header -->
+    <header>
+      <div class="logo">🫒</div>
+      <h1>مساعد الزيتون</h1>
+      <div class="subtitle">Olive AI Assistant · Tunisia</div>
+    </header>
+
+    <!-- Image card -->
+    <div class="card">
+      <div class="card-title">📷 صورة الورقة</div>
+      <div class="image-drop" id="imageDrop">
+        <input type="file" accept="image/*" capture="environment" id="imageInput" onchange="handleImage(event)" />
+        <div class="drop-icon">🍃</div>
+        <div class="drop-text">اضغط لتصوير ورقة الزيتون<br /><small>أو اختر صورة من مكتبتك</small></div>
+      </div>
+      <div id="diseaseBadge" style="display:none"></div>
+    </div>
+
+    <!-- Voice card -->
+    <div class="card">
+      <div class="card-title">🎙️ سؤالك</div>
+      <button class="mic-btn" id="micBtn" onclick="toggleRecording()">🎤</button>
+      <div class="mic-label" id="micLabel">اضغط للتكلم</div>
+      <div class="text-input-row">
+        <input class="text-input" id="textInput" placeholder="أو اكتب سؤالك هنا..." type="text" />
+        <button class="send-btn" onclick="sendTextQuery()">↵</button>
+      </div>
+      <div class="transcription" id="transcription"></div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar" id="statusBar">
+      <div class="dot" id="statusDot"></div>
+      <span id="statusText">جاهز للاستخدام</span>
+    </div>
+
+    <!-- Answer -->
+    <div class="card answer-card" id="answerCard">
+      <div class="answer-header">
+        <div class="card-title" style="margin:0">💬 الإجابة</div>
+        <span class="in-corpus-badge" id="corpusBadge"></span>
+      </div>
+      <div id="answerText"></div>
+      <div class="sources-row" id="sourcesRow"></div>
+      <div class="score-meter">
+        <div class="score-fill" id="scoreFill" style="width:0%"></div>
+      </div>
+      <div class="score-label" id="scoreLabel"></div>
+      <button class="play-btn" id="playBtn" onclick="playAudio()" style="display:none">
+        🔊 استمع للإجابة
+      </button>
+      <audio id="audioPlayer" controls class="audio-player"></audio>
+    </div>
+
+    <footer>RAG · Whisper · CNN · edge-tts · Anti-hallucination v1.0</footer>
+  </div>
+
+  <script>
+    // ── Config ─────────────────────────────────────────────────────────────────
+    const API = "http://localhost:8003";
+  // same origin as backend
+
+    // ── State ──────────────────────────────────────────────────────────────────
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let selectedImageFile = null;
+    let currentAudioB64 = null;
+
+    const DISEASE_LABELS = {
+      healthy:        { ar: "ورقة سليمة (Saine) ✅",   cls: "healthy" },
+      peacock_eye:    { ar: "عين الطاووس (Oeil de paon) 🔴",  cls: "sick" },
+      anthracnose:    { ar: "أنثراكنوز (Anthracnose) 🟠",     cls: "sick" },
+      verticillium:   { ar: "ذبول فيرتيسيلي (Verticilliose) 🔴", cls: "sick" },
+      sooty_mold:     { ar: "السواد العفني (Fumagine) ⚫",   cls: "sick" },
+      leaf_spot:      { ar: "تبقع الأوراق (Cercosporiose) 🟡",   cls: "sick" },
+      not_olive:      { ar: "مش زيتون 🛑",            cls: "sick" },
+    };
+
+    // ── Image handling ──────────────────────────────────────────────────────────
+    function handleImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      selectedImageFile = file;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const drop = document.getElementById('imageDrop');
+        drop.innerHTML = `<img src="${e.target.result}" alt="leaf"/>`;
+        drop.appendChild(Object.assign(document.createElement('input'), {
+          type: 'file', accept: 'image/*', style: 'position:absolute;inset:0;opacity:0;cursor:pointer'
+        }));
+        drop.querySelector('input').onchange = handleImage;
+      };
+      reader.readAsDataURL(file);
+
+      // Quick client-side preview of disease (will be overridden by backend)
+      document.getElementById('diseaseBadge').style.display = 'none';
+    }
+
+    // ── Recording ───────────────────────────────────────────────────────────────
+    async function toggleRecording() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        await startRecording();
+      }
+    }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: 'audio/webm' });
+          sendQuery(blob);
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        document.getElementById('micBtn').classList.add('active');
+        document.getElementById('micLabel').textContent = 'اضغط للإيقاف...';
+        setStatus('yellow', 'يسجّل... تكلّم الآن');
+      } catch (err) {
+        setStatus('red', 'خطأ في الميكروفون: ' + err.message);
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+        isRecording = false;
+        document.getElementById('micBtn').classList.remove('active');
+        document.getElementById('micBtn').textContent = '🎤';
+        document.getElementById('micLabel').textContent = 'جاري التحليل...';
+      }
+    }
+
+    function sendTextQuery() {
+      const q = document.getElementById('textInput').value.trim();
+      if (!q) return;
+      sendQuery(null, q);
+    }
+
+    document.getElementById('textInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') sendTextQuery();
+    });
+
+    // ── Main query ───────────────────────────────────────────────────────────────
+    async function sendQuery(audioBlob = null, textQuestion = null) {
+      setStatus('yellow spin', 'جاري التحليل...');
+      document.getElementById('answerCard').classList.remove('visible');
+      document.getElementById('playBtn').style.display = 'none';
+      document.getElementById('diseaseBadge').style.display = 'none';
+      currentAudioB64 = null;
+
+      const formData = new FormData();
+      if (audioBlob) formData.append('audio', audioBlob, 'recording.webm');
+      if (selectedImageFile) formData.append('image', selectedImageFile);
+      if (textQuestion) formData.append('text_question', textQuestion);
+
+      try {
+        const res = await fetch(`${API}/query`, { method: 'POST', body: formData });
+        const data = await res.json();
+        renderAnswer(data);
+      } catch (err) {
+        setStatus('red', 'خطأ في الاتصال: ' + err.message);
+      }
+    }
+
+    // ── Render answer ────────────────────────────────────────────────────────────
+    function renderAnswer(data) {
+      // Transcription
+      if (data.transcription) {
+        const t = document.getElementById('transcription');
+        t.textContent = '🎤 "' + data.transcription + '"';
+        t.classList.add('visible');
+      }
+
+      // Disease badge
+      if (data.disease) {
+        const badge = document.getElementById('diseaseBadge');
+        const info = DISEASE_LABELS[data.disease.class] || { ar: data.disease.class, cls: 'sick' };
+        const conf = Math.round(data.disease.confidence * 100);
+        badge.innerHTML = `<span class="disease-badge ${info.cls}">${info.ar} — ${conf}%</span>`;
+        badge.style.display = 'block';
+      }
+
+      // Answer
+      const answerCard = document.getElementById('answerCard');
+      const answerText = document.getElementById('answerText');
+      const corpusBadge = document.getElementById('corpusBadge');
+
+      if (data.in_corpus) {
+        answerText.innerHTML = `<div class="answer-text">${escHtml(data.answer)}</div>`;
+        corpusBadge.textContent = '✅ من المصادر';
+        corpusBadge.className = 'in-corpus-badge yes';
+        setStatus('green', 'إجابة من قاعدة البيانات');
+      } else {
+        answerText.innerHTML = `<div class="refusal-text">${escHtml(data.answer)}</div>`;
+        corpusBadge.textContent = '⚠️ خارج النطاق';
+        corpusBadge.className = 'in-corpus-badge no';
+        setStatus('red', `رفض礼貌: score=${(data.top_score || 0).toFixed(2)}`);
+      }
+
+      // Sources
+      const sourcesRow = document.getElementById('sourcesRow');
+      sourcesRow.innerHTML = (data.sources || []).map(s =>
+        `<span class="source-tag">📄 ${escHtml(s)}</span>`
+      ).join('');
+
+      // Score meter
+      const score = Math.max(0, Math.min(1, data.top_score || 0));
+      document.getElementById('scoreFill').style.width = (score * 100) + '%';
+      document.getElementById('scoreLabel').textContent =
+        `Relevance score: ${score.toFixed(3)} (threshold: 0.25)`;
+
+      // Audio
+      if (data.audio_b64) {
+        currentAudioB64 = data.audio_b64;
+        document.getElementById('playBtn').style.display = 'flex';
+      }
+
+      answerCard.classList.add('visible');
+    }
+
+    function playAudio() {
+      if (!currentAudioB64) return;
+      const player = document.getElementById('audioPlayer');
+      player.src = 'data:audio/mp3;base64,' + currentAudioB64;
+      player.classList.add('visible');
+      player.play();
+      document.getElementById('playBtn').style.display = 'none';
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────────
+    function setStatus(dotClass, text) {
+      const dot = document.getElementById('statusDot');
+      dot.className = 'dot ' + dotClass;
+      document.getElementById('statusText').textContent = text;
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br/>');
+    }
+
+    // ── PWA service worker ────────────────────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => { });
+    }
+  </script>
+</body>
+
+</html>

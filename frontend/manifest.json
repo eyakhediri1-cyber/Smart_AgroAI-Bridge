@@ -1,0 +1,17 @@
+{
+  "name": "مساعد الزيتون - OleaVision",
+  "short_name": "مساعد الزيتون",
+  "description": "AI Assistant for Tunisian Olive Farmers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1a07",
+  "theme_color": "#1a2e0e",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2927/2927347.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+anthropic==0.28.0
+faiss-cpu==1.8.0
+sentence-transformers==3.0.1
+openai-whisper==20231117
+edge-tts==6.1.12
+torch==2.3.0
+torchvision==0.18.0
+Pillow==10.3.0
+PyMuPDF==1.24.5
+numpy==1.26.4
